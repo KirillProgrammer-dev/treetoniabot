@@ -1,0 +1,34 @@
+[Unit]
+Description=<YOUR BOT DESCRIPTION>
+After=network.target
+
+[Service]
+Type=simple
+User=<имя пользователя от которого вы запускаете скрипты>
+Group=<группа пользователя от которого вы запускаете скрипты>
+
+Environment=PYTHONPATH=</full/path/to/directory/with/your/script> 
+WorkingDirectory=</full/path/to/directory/with/your/script>
+ExecStart=[Unit]
+Description=<YOUR BOT DESCRIPTION>
+After=network.target
+
+[Service]
+Type=simple
+User=<имя пользователя от которого вы запускаете скрипты>
+Group=<группа пользователя от которого вы запускаете скрипты>
+
+Environment=PYTHONPATH=</full/path/to/directory/with/your/script> 
+WorkingDirectory=</full/path/to/directory/with/your/script>
+ExecStart=</full/path/to/python> </full/path/to/your/script>
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=network.target </full/path/to/your/script>
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=network.target
+
