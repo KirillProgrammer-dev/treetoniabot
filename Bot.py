@@ -1,9 +1,12 @@
+from codecs import replace_errors
 from csv import excel
 import telebot
 from telebot import types
 from Order import Order
 from Excel import Excel 
 import time
+import datetime
+from threading import Thread
 
 bot = telebot.TeleBot("5203991048:AAHAy43v41b5jumeqczpr559jv3VfXOVsXw")
 
@@ -58,6 +61,7 @@ def create_order(message):
         bot.register_next_step_handler(message, get_email)
     else:
         bot.send_message(message.from_user.id, "Вы уже сделали 1 заказ, если хотите изменить его напишите /editorder")
+
 
 @bot.message_handler(commands=['editorder'])
 def edit_order(message):
@@ -179,6 +183,13 @@ def show_order(message):
 
 #MAIN FUNCTION
 creating_order = False
+@bot.message_handler(commands=['help'])
+def help(message):
+    markup = types.InlineKeyboardMarkup()
+    chat = types.InlineKeyboardButton("Наш телеграмм чат", url="https://t.me/joinchat/aTpIbg3esacyMTY6")
+    markup.add(chat)
+    bot.send_message(message.from_user.id, "По всем вопросам пишите сюда", reply_markup=markup)
+
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     if message.text == "/start":
@@ -278,12 +289,36 @@ def callback_inline(call):
 #END
 
 #MAIN CYCLE
+class Thread1(Thread):
+    def run(self): 
+        while True:
+            try:
+                bot.polling(none_stop=True)
+            except Exception as e:
+                time.sleep(3)
+                print(e)
 
-while True:
-    try:
-        bot.polling(none_stop=True)
-    except Exception as e:
-        time.sleep(3)
-        print(e)
+class Thread2(Thread):
+    def run(self):
+        while True:
+            with open("dates.txt", "r", encoding="utf-8") as f:
+                all_dates = f.read().split(",")
+                now = datetime.datetime.now()
+                for i in all_dates:
+                    try:
+                        if datetime.datetime.strptime(i, '%d.%m') == datetime.datetime.strptime(f"{datetime.datetime.now().day}.{datetime.datetime.now().month}", "%d.%m"):
+                            if int(now.time().hour) >= 10:
+                                all_dates.remove(i)
+                    except:
+                        pass
+                with open("dates.txt", "w", encoding="utf-8") as f:
+                    #print(all_dates)
+                    f.write(",".join(all_dates))
+
+th2 = Thread2()
+th2.start()
+th1 = Thread1()
+th1.start()
+
 
 #END
